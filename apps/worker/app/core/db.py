@@ -1,0 +1,28 @@
+from contextlib import contextmanager
+from typing import Iterator
+import psycopg
+from psycopg.rows import dict_row
+from .config import get_settings
+
+
+@contextmanager
+def connection() -> Iterator[psycopg.Connection]:
+    settings = get_settings()
+    if not settings.database_url:
+        raise RuntimeError("DATABASE_URL is required for the worker")
+    with psycopg.connect(settings.database_url, row_factory=dict_row) as conn:
+        yield conn
+
+
+def fetch_one(sql: str, params: tuple = ()) -> dict | None:
+    with connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            return cur.fetchone()
+
+
+def execute(sql: str, params: tuple = ()) -> None:
+    with connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+        conn.commit()

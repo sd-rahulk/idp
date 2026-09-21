@@ -1,0 +1,1 @@
+-- Agent definitions are seeded by the migration. This file intentionally contains no user projects or findings.

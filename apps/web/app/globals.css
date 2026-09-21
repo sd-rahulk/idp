@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; --font-geist: "Segoe UI", sans-serif; --font-newsreader: Georgia, serif; --font-jetbrains: "Cascadia Code", Consolas, monospace; }
+* { box-sizing: border-box; }
+html { background: #0b0f12; }
+body { margin: 0; background: #0b0f12; color: #e8f0ed; font-family: var(--font-geist); }
+::selection { background: rgba(84, 214, 194, .28); color: #f5fffc; }
+button, input, textarea, select { font: inherit; }
+.noise { position: relative; }
+.noise::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .032; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"); mix-blend-mode: screen; }
+.grid-fade { background-image: linear-gradient(rgba(125, 184, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(125, 184, 255, .05) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
+@keyframes pulse-line { 0%, 100% { opacity: .4; transform: scaleX(.86); } 50% { opacity: 1; transform: scaleX(1); } }
+.pulse-line { animation: pulse-line 2.4s ease-in-out infinite; transform-origin: left; }

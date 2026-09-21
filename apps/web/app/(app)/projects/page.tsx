@@ -1,0 +1,15 @@
+import Link from "next/link";
+import { ArrowUpRight, FolderKanban, Plus } from "lucide-react";
+import { Badge, Panel } from "@/components/ui";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { formatDate } from "@/lib/utils";
+import type { Project } from "@/types";
+
+type ProjectRow = Project & { targets?: { url: string; verified_at: string | null } | null; scans?: { id: string; status: string; created_at: string }[] };
+
+export default async function ProjectsPage() {
+  const client = await createSupabaseServerClient();
+  const { data } = client ? await client.from("projects").select("id,name,description,created_at,updated_at,targets(url,verified_at),scans(id,status,created_at)").order("updated_at", { ascending: false }) : { data: [] };
+  const projects = (data ?? []) as unknown as ProjectRow[];
+  return <div className="mx-auto max-w-[1200px] space-y-7"><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><div className="font-mono text-[10px] uppercase tracking-[.22em] text-teal">workspace / projects</div><h1 className="mt-2 font-display text-5xl leading-none">Your assessment surface.</h1><p className="mt-3 text-sm text-muted">Each project keeps authorization, artifacts, workflow state, and reports together.</p></div><Link href="/projects/new" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal px-4 py-2.5 text-sm font-bold text-ink"><Plus size={15}/> New project</Link></div><Panel><div className="grid grid-cols-[1.6fr_1fr_.6fr_.5fr] border-b border-line px-5 py-3 font-mono text-[9px] uppercase tracking-[.16em] text-muted"><span>Project</span><span>Target</span><span>Status</span><span>Updated</span></div>{projects.length?projects.map(project=>{const latest=project.scans?.[0];return <Link key={project.id} href={`/projects/${project.id}`} className="grid grid-cols-1 gap-3 border-b border-line px-5 py-5 transition last:border-0 hover:bg-panel2 sm:grid-cols-[1.6fr_1fr_.6fr_.5fr] sm:items-center"><div className="flex items-center gap-3"><div className="grid h-9 w-9 place-items-center rounded-lg border border-line bg-ink text-teal"><FolderKanban size={16}/></div><div><div className="text-sm font-semibold">{project.name}</div><div className="mt-1 max-w-[360px] truncate text-xs text-muted">{project.description||"No description"}</div></div></div><div className="truncate font-mono text-[10px] text-muted">{project.targets?.url||"Source-only project"}</div><div><Badge tone={latest?.status === "completed" ? "teal" : latest ? "amber" : "neutral"}>{latest?.status?.replaceAll("_"," ")||"ready"}</Badge></div><div className="font-mono text-[10px] text-muted">{formatDate(project.updated_at)} <ArrowUpRight size={12} className="ml-1 inline"/></div></Link>}) : <div className="px-5 py-16 text-center"><FolderKanban size={24} className="mx-auto text-muted"/><h2 className="mt-4 text-sm font-semibold">No projects yet</h2><p className="mt-2 text-sm text-muted">Create a project for the intentional fixture or one of your owned targets.</p></div>}</Panel></div>;
+}

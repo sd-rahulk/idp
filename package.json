@@ -1,0 +1,14 @@
+{
+  "name": "aegisflow",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/web", "packages/shared-schemas"],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/web",
+    "build": "npm run build --workspace apps/web",
+    "lint": "npm run lint --workspace apps/web",
+    "typecheck": "npm run typecheck --workspace apps/web",
+    "test": "npm run test --workspace apps/web && python -m pytest apps/worker/tests",
+    "worker:dev": "python -m uvicorn app.main:app --app-dir apps/worker --reload --port 8000"
+  }
+}
