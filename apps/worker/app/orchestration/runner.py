@@ -59,7 +59,7 @@ def run_scan(scan_id: str) -> None:
     registry = AgentRegistry()
     with connection() as conn:
         with conn.cursor() as cur:
-            cur.execute("select s.*, p.name as project_name, t.url, t.verified_at from public.scans s join public.projects p on p.id = s.project_id left join public.targets t on t.project_id = p.id where s.id = %s for update", (scan_id,))
+            cur.execute("select s.*, p.name as project_name, t.url, t.verified_at from public.scans s join public.projects p on p.id = s.project_id left join public.targets t on t.project_id = p.id where s.id = %s for update of s", (scan_id,))
             scan = cur.fetchone()
             if not scan:
                 raise ValueError("Scan not found")
